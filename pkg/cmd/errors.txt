@@ -1,0 +1,23 @@
+package cmd
+
+import (
+	"os"
+
+	log "github.com/sirupsen/logrus"
+)
+
+//////////////////
+// CheckError logs a fatal message and exits with ErrorGeneric if err is not nil
+func CheckError(err error) {
+	if err != nil {
+		Fatal(ErrorGeneric, err)
+	}
+}
+
+func Fatal(exitcode int, args ...interface{}) {
+	exitfunc := func() {
+		os.Exit(exitcode)
+	}
+	log.RegisterExitHandler(exitfunc)
+	log.Fatal(args...)
+}

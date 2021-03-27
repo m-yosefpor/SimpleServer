@@ -1,0 +1,5 @@
+listen:
+  ip: "127.0.0.1"
+  port: 9876
+auth:
+  token: "sth"
