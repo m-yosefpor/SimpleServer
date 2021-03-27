@@ -15,8 +15,12 @@ func newStartCmd(c *Config) *cobra.Command {
 			start(c)
 		},
 	}
-	startCmd.Flags().IntVarP(&c.Config.Listen.Port, "port", "p", 1, "port to bind to")
+	startCmd.Flags().IntVarP(&c.Listen.Port, "port", "p", 1, "port to bind to")
 	if err := viper.BindPFlag("port", startCmd.Flags().Lookup("port")); err != nil {
+		log.Fatal("Unable to bind flag:", err)
+	}
+	startCmd.Flags().IntVarP(&c.Verbose, "verbose", "v", 2, "verbosity")
+	if err := viper.BindPFlag("verbose", startCmd.Flags().Lookup("verbose")); err != nil {
 		log.Fatal("Unable to bind flag:", err)
 	}
 	return startCmd
@@ -25,7 +29,7 @@ func newStartCmd(c *Config) *cobra.Command {
 func start(c *Config) {
 
 	log.Info("Log level: ", c.Verbose)
-	log.Info(c.Verbose)
+	log.Info(c.Listen.Port)
 	log.Warn("I'm here")
 
 }

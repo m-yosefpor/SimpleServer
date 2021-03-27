@@ -1,7 +1,5 @@
 package cli
 
-var Cfg Config
-
 type Config struct {
 	Listen struct {
 		Ip   string
@@ -11,4 +9,10 @@ type Config struct {
 		Token string
 	}
 	Verbose int
+}
+
+func NewConfig() *Config {
+	return &Config{
+		Verbose: 1,
+	}
 }

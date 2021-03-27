@@ -3,3 +3,4 @@ listen:
   port: 9876
 auth:
   token: "sth"
+verbose: 3

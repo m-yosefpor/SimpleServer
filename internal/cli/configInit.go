@@ -1,53 +1,51 @@
 package cli
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/mitchellh/go-homedir"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func InitializeConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("config")
-		viper.AddConfigPath(".")
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			log.Fatal(err)
-		}
-		viper.AddConfigPath(home)
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err != nil {
-		if cfgFile != "" {
-			log.Println("config specified but unable to read it, using defaults")
-		}
-	}
+type Spf struct {
+	C   *cobra.Command
+	V   *viper.Viper
+	Cfg *Config
 }
 
-func Read(name string) error {
-	viper.SetConfigName(name)
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
-
-	if err != nil {
-		return fmt.Errorf("cannot read config file: %w", err)
+func InitCli() *Spf {
+	s := &Spf{
+		V:   viper.New(),
+		Cfg: NewConfig(),
 	}
+	s.C = NewRootCommand(s.Cfg)
+	return s
+}
 
-	err = viper.Unmarshal(&config)
-
+func (s *Spf) ReadConfig(name string) error {
+	s.V.SetConfigName(name)
+	s.V.SetConfigType("yaml")
+	s.V.AddConfigPath(".")
+	home, err := homedir.Dir() // side-effect: Find home directory.
 	if err != nil {
-		return fmt.Errorf("cannot unmarshal config file: %w", err)
+		return err
 	}
+	s.V.AddConfigPath(home)
 
+	s.V.AutomaticEnv() // side-effect: read in environment variables that match
+
+	if err := s.V.ReadInConfig(); err != nil { // side-effect: read config file
+		return err
+		// It's okay if there isn't a config file
+		// if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		// return err
+		// }
+	}
+	if err := s.V.Unmarshal(s.Cfg); err != nil {
+		return err
+	}
+	log.Info(s.Cfg.Listen.Ip)
+	log.Info(s.Cfg.Listen.Port)
+	log.Info(s.Cfg.Auth.Token)
 	return nil
 }
