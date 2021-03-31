@@ -1,6 +1,10 @@
 package cli
 
 import (
+	"net"
+	"net/http"
+	"strconv"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,5 +35,9 @@ func start(c *Config) {
 	log.Info("Log level: ", c.Verbose)
 	log.Info(c.Listen.Port)
 	log.Warn("I'm here")
+	addr := net.JoinHostPort(c.Listen.Ip, strconv.Itoa(c.Listen.Port))
+	log.Info("Listening on: ", addr)
+	fs := http.FileServer(http.Dir("."))
+	log.Fatal(http.ListenAndServe(addr, fs))
 
 }
