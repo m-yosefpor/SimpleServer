@@ -42,6 +42,7 @@ You can use docker-compose to run a local copy of the application. Here are usef
 
 https://oxozle.com/awetop/avelino-awesome-go/
 
+```
 log:
     sirupsen/logrus 17.5k
     kubernetes/klog 280
@@ -72,6 +73,7 @@ routers:
     httprouter 12k
 dns:
     miekg/dns 5k
+```
 
 ## License
 
